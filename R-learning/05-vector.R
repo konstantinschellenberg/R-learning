@@ -50,7 +50,7 @@ coordinates(meu_sp) <- c("x", "y")
 
 meu_sf <- st_as_sf(meu_sp)
 # or doing it directly
-# st_as_sf(meuse, coords = c("x", "y"))
+meu_sf = st_as_sf(meuse, coords = c("x", "y"))
 
 # (optional) set crs (helps for plotting)
 st_crs(meu_sf) <- 28992
@@ -67,7 +67,7 @@ summary(meuse[, vars])
 med <- median(meu_sf$copper)
 dplyr::filter(meu_sf, elev > 7 & copper > med)
 
-# select the points which are at a elevation higher than 7 and whose copper
+# select the points which are at an elevation higher than 7 and whose copper
 # content is greater than the median copper content
 med <- median(meu_sf$copper)
 subset <- meu_sf[meu_sf$copper > med & meu_sf$elev > 7, ]
