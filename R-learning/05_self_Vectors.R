@@ -21,4 +21,5 @@ meu_sf = st_as_sf(meuse, coords = c('x', 'y'))
 plot(st_geometry(meu_sf))
 
 meu_sf %>% 
-    dplyr::filter(elev > 7 && copper > median(meu_sf$copper))
+    dplyr::filter(elev > 7 && copper > median(meu_sf$copper)) %>%
+    
