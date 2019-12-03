@@ -1,17 +1,37 @@
-library(purrr)
+# library(purrr)
 library(dplyr)
 library(tidyverse)
+library(tidyr)
+library(readr)
 
-df = data.frame(
-    v1 = c(-16, -1, -15, -17.5, -17),
-    v2 = c(-17, -14, -13, -17.7, -19),
-    v3 = c(-14, -13, -19, -17.4, -20),
-    date = as.Date(c("25-4-16", "4-4-16", "3-4-15", "4-9-17", "3-1-2015")
-    )
-)
+# vignette to pivot
+relig_income
+
+length(names(relig_income))
+
+x = pivot_longer(relig_income, -religion, names_to = "income", values_to = "however")
+
+relig_income %>% 
+    pivot_longer(-religion, names_to = "income", values_to = "value") %>% 
+    View()
+
+billboard %>% 
+    pivot_longer(
+        cols = starts_with("wk"),
+        names_to = "week",
+        values_to = "rank",
+        values_drop_na = TRUE
+    ) %>% 
+    View()
+
+
+
 df
 
+# transform to long table, required by serveral dplyr applications
 df_long = pivot_longer(df, -date)
+
+df_long
 
 df_long %>% 
     mutate(m = mean(df_long$value))
