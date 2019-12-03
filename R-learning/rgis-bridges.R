@@ -144,7 +144,8 @@ twi_saga <- raster(file.path(tempdir(), "twi.sdat"))
 # sf uses geos, a geospatial library, in the background
 plot(poly_1$geometry, xlim = c(-1, 1), ylim = c(-1, 1))
 plot(poly_2$geometry, add = TRUE)
-plot(sf::st_intersection(poly_1, poly_2), add = TRUE, col = "red")
+intersect_poly = sf::st_intersection(poly_1, poly_2)
+plot(intersect_poly, add = TRUE, col = "red")
 
 # 4.2 Using SAGA through RQGIS -------------------------------------------------
 
@@ -190,7 +191,7 @@ poly_2 <- sf::st_set_crs(poly_2, 4326) %>%
 link2GI::linkGRASS7(st_union(poly_1, poly_2))
 
 #rgrass7::initGRASS(gisBase = "/usr/local/Cellar/osgeo-grass/7.6.1_5/grass76/", override = T)
-rgrass7::initGRASS(gisBase = "/usr/local/Cellar/grass7-lts/7.2.3/grass-7.2.3/", override = T)
+rgrass7::initGRASS(gisBase = "/usr/lib/grass76/", override = T)
 
 # or manually
 
