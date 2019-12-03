@@ -15,12 +15,16 @@ relig_income %>%
     pivot_longer(-religion, names_to = "income", values_to = "value") %>% 
     View()
 
+billboard
+
 billboard %>% 
     pivot_longer(
-        cols = starts_with("wk"),
-        names_to = "week",
+        cols = starts_with("wk"), 
+        names_to = "week", 
+        names_prefix = "wk",
+        names_ptypes = list(week = integer()),
         values_to = "rank",
-        values_drop_na = TRUE
+        values_drop_na = TRUE,
     ) %>% 
     View()
 

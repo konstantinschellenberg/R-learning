@@ -24,7 +24,8 @@ browseURL("https://www.dm.de/filialfinder-c468710.html?q_storefinder=")
 # programmatically, of course
 coords = data.frame(X = 11.59398, Y = 50.94939)
 
-url = paste0(
+# paste0: stack strings
+url = paste0( 
   "https://www.dm.de/cms/restws/stores/find?requestingCountry=DE&", 
   "countryCodes=DE%2CAT%2CBA%2CBG%2CSK%2CRS%2CHR%2CCZ%2CRO%2CSI%", 
   "2CHU%2CMK&mandantId=100", 
@@ -42,10 +43,19 @@ browseURL(url)
 # API due to an excessive amount of GET queries!
 out = jsonlite::fromJSON(url)
 # hence, save your output
+# .rds: native R formate für die Speicherung.
 saveRDS(out, "homework/01-stores/data/dm_json.rds")
 # to read in the output, use
+# load ist nicht so elegant. Load gefährlicher, einige Leute könnten es ablehnen
 out = readRDS("homework/01-stores/data/dm_json.rds")
+
+str(out)
 
 # 1.4 extract the information from the json-file you need -----------------------
 
 out$address
+
+# address.city is nestes data.frame inside data.frame
+
+--------------------------------------------------------------------------------
+# Hausaufgabe DM-Filialen zufällig in Deutschland

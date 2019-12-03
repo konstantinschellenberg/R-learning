@@ -26,7 +26,9 @@ library("purrr")
 # load the nc and meuse datasets
 nc <- read_sf(system.file("shape/nc.shp", package = "sf"))
 data(meuse)
-
+class(meuse)
+View(meuse)
+meuse
 # 1 EXERCISE 1 -----------------------------------------------------------------
 
 # 1.1  Load the "North Carolina" dataset into R, find out about its ------------
@@ -50,7 +52,7 @@ coordinates(meu_sp) <- c("x", "y")
 
 meu_sf <- st_as_sf(meu_sp)
 # or doing it directly
-meu_sf = st_as_sf(meuse, coords = c("x", "y"))
+st_as_sf(meuse, coords = c("x", "y"))
 
 # (optional) set crs (helps for plotting)
 st_crs(meu_sf) <- 28992
@@ -67,7 +69,7 @@ summary(meuse[, vars])
 med <- median(meu_sf$copper)
 dplyr::filter(meu_sf, elev > 7 & copper > med)
 
-# select the points which are at an elevation higher than 7 and whose copper
+# select the points which are at a elevation higher than 7 and whose copper
 # content is greater than the median copper content
 med <- median(meu_sf$copper)
 subset <- meu_sf[meu_sf$copper > med & meu_sf$elev > 7, ]
@@ -152,7 +154,7 @@ pmat <- matrix(c(bb[c(1, 2, 3, 2, 3, 4, 1, 4, 1, 2)]), ncol = 2, byrow = TRUE)
 box <- st_polygon(list(pmat))
 # or shortcut version (https://github.com/r-spatial/sf/issues/572)
 box <- st_as_sfc(bb)
-
+class(box)
 # 2.6 Add the `meuse` river to your plot, and color it in an appropriate way ---
 
 plot(st_intersection(riv, box), col = "lightblue")
