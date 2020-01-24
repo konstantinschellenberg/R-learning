@@ -1,110 +1,102 @@
 ---
-title: "raster_terra_stars"
-author: "Konstantin Schellenberg"
-date: "21 1 2020"
-output: ioslides_presentation
-    
+title: "Raster - Terra - Stars"
+subtitle: "Raster handling in R"
+author: "Konstantin Schellenberg, GEO404, WS 2019/20"
+date: "`r format(Sys.time(), '%B %e, %Y')`"
+output: 
+    ioslides_presentation:
+        widescreen: true
+        smaller: true
+        logo: Logo_UniJena.svg
+        template: presentation.html
+        css: styles.css
+bibliography: refs.bib
+biblio-style: apalike
 ---
 
-TODO Rmd presentation:
+```{r lit, cache=FALSE, include=FALSE}
 
-ioslides am besten?
-Inhaltsverzeichnis
-Seitenzahlen
-Fußzeile
-Theme
-Fond
-Fondsize
+# create bib-file for citation of R-packages
+knitr::write_bib(c("raster", "terra", "stars"),
+  file = "refs.bib",
+  prefix = "R-"
+)
 
-TODO R script:
-create random rasters
+```
+
+<!-- TODO Rmd presentation: -->
 
 
-# Raster - Terra - Stars
-**Raster handling in R**
-<br>
-<br>
-Konstantin Schellenberg, GEO404, WS 2019/20
-<br>
-Superviser: MSc. Patrick Schratz
+<!-- Inhaltsverzeichnis -->
+<!-- Fußzeile -->
+<!-- Theme -->
+<!-- Fondsize -->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
 library(raster)
+library(stars)
+library(terra)
+
 library(tidyverse)
-# library(stars)
-# library(terra)
+library(rasterVis)
+library(RColorBrewer)
 ```
 
-## `Raster`
+## `Raster` 
+
 - rspatial community <https://www.rspatial.org/>
-- creator: Robert J. Hijmans
+- creator: Robert J. Hijmans [@R-raster]
 - maintainer, authors: ~
+
 
 ### Basics
 Rasters are spatial data on a regular grid with elements called "pixels". Contrast to vector data, representing points, lines & polygons (see `sp`, `sf`)
 
-Benefits: <br>
+___
+
+### Benefits: 
+
+<br>
 
 - not loading into local memory 
 - only stores metainformation (layer number, spatial extent, pixel size) in Raster* objects. 
 - Raster*-functions break down tasks to lightweight chunks to be processed sequentially. 
+
 <br> 
+
 -> large scale data will not overload memory
 
-##
-### Classes
 
-- RasterLayer `raster(obj)`
-- RasterStack: Links to multiple files
-- RasterBrick: Only links to one file, but more efficient. E.g. multiband remote sensing layers
+___
 
-```{r echo=T}
-raster()
-stack()
-brick()
+```{r 1-raster-import, echo=TRUE}
+ras = raster("data/2015-08-23_NDVI.tif")
 ```
+Let's plot a max. pixel number
+```{r 1-ndvi-plot, echo=TRUE}
 
-##
-### Simple raster algebra
+pal = brewer.pal(6, "RdYlGn")
 
-creating a raster:
+plot(ras, col = pal,
+     maxpixels = 10000)
 
-```{r 1-raster_creation, echo=TRUE}
-raster = raster(ncol = 100, # extent
-                nrow = 100)
-dim(raster)
-values(raster) = 10 # populate with constant
 ```
+___
 
 ##
-applying some simple tasks:
 
-```{r 1-algebra, echo=TRUE}
-add = raster + 10
-sqrt = sqrt(raster)
+Let's plot only a defined extent:
 
-raster[1:ncol(raster)/2,] = 11 # indexing cells, assigning new values
-raster[, 1:ncol(raster)/2] = 12
-raster[raster == 10] = 30
+```{r 1-ndvi-plot2, echo=TRUE}
+plot(ras, col = pal,
+     ext = c(630000, 660000, 5690000, 5710000))
 ```
 
-## Simple Plotting
+___
 
-```{r 1-plot, echo=TRUE}
-plot(raster)
-```
 
-## 
-### summaries
-
-```{r 1-summaries, echo=TRUE}
-mean = mean(raster, add)
-plot(mean)
-```
-
-##
 ### High-level methods
 
 - functions normally implemented in GIS or remote sensing software
@@ -112,28 +104,82 @@ plot(mean)
 
 crop (subsetting with `sp` object)
 trim (removes NA from cropped rasters)
+predict (apply a trained model in raster data)
 
-```{r}
-library()
-data()
-raster::crop()
+## Terra 
+
+replaces the `raster` package (in the future)
+
+- rspatial community <https://www.rspatial.org/>
+- creator: Robert J. Hijmans [@R-terra]
+- released July 2019 
+- C++ handling of raster data -> much faster than raster
+- required `Rtools` for windows build 
+- clone development stage from github (not yet on CRAN)
+
+```{r install_terra, echo=TRUE, include=FALSE}
+devtools::install_github("rspatial/terra")
 ```
 
+___
 
+- implements new classes for spatial data (SpatRaster-class)
+- out-of-memory raster operations as `stars_proxy`-objects
+- rectangular grid (pixels of equal size)
 
+### Functions
+- vectors to raster conversions
+- local, zonal, global raster operations
+- integration with spatial modeling methods
 
-## Terra
 ## Stars
 
-## Slide with R Output
+- r-spatial community <https://www.r-spatial.org/>
+- Edzer Pebesma [@R-stars]
+- released ~
 
-```{r cars, echo = TRUE}
-summary(cars)
+##
+
+Handles spatio-temporal data with/as
+
+- raster cubes (3 dimension)
+- raster hypercubes (4 & more dimension)
+- vector hypercubes
+- raster non-regular grids
+
+```{r 3-cube, echo = FALSE, cache = TRUE, px = 200, fig.cap="Multi-dimensional raster cubes [@R-stars]", fig.show = "hold", out.width = "50%"}
+knitr::include_graphics("img/cube1.png")
+knitr::include_graphics("img/cube2.png")
 ```
 
-## Slide with Plot
+##
 
-```{r pressure}
-plot(pressure)
+```{r 3-grids, echo = FALSE, cache = TRUE, px = 200, fig.cap="Grid formats allowed as `stars`-object [@R-stars]", fig.show = "hold", out.width = "50%"}
+knitr::include_graphics("img/grids.png")
 ```
 
+##
+
+- uses GDAL, netCDF, geos and proj backend
+- stars_proxy are .vrt like objects
+
+
+##
+
+Here we can see the similarity with `sf`-verbs and methods:
+
+```{r 3-methods, echo=TRUE}
+methods(class = "stars")
+```
+
+## stars-proxy
+
+
+
+
+
+
+### Functions
+
+
+## References
