@@ -39,9 +39,34 @@ methods(class = "stars_proxy")
 
 system.time(plot(star))
 
+## stars_proxy vignette
 
+install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source") 
 
+# read_stars uses RasterIO, using the GDAL interface -> very handy
+# yet, writting into memory. -> Time $ RAM consuming
+library(stars)
 
+tif = system.file("tif/L7_ETMs.tif", package = "stars")
 
+star2 = read_stars(tif)
 
+plot(star2)
+
+gdal_query = list(nXOff = 6, nYOff = 6, nXSize = 100, nYSize = 100, 
+                  bands = c(1, 3, 4))
+
+plot(read_stars(tif, RasterIO = gdal_query))
+
+gdal_query = list(nXOff = 6, nYOff = 6, nXSize = 100, nYSize = 100, 
+                  nBufXSize = 20, nBufYSize = 20,
+                  bands = c(1, 3, 4))
+
+plot(read_stars(tif, RasterIO = gdal_query))
+
+gdal_query = list(nXOff = 6, nYOff = 6, nXSize = 3, nYSize = 3,
+                  nBufXSize = 200, nBufYSize = 200, bands = 1, 
+                  resample = "cubic")
+
+plot(read_stars(tif, RasterIO = gdal_query))
 

@@ -140,12 +140,12 @@ ___
 
 ##
 
-Handles spatio-temporal data with/as
+Handles spatio-temporal data as
 
 - raster cubes (3 dimension)
 - raster hypercubes (4 & more dimension)
 - vector hypercubes
-- raster non-regular grids
+
 
 ```{r 3-cube, echo = FALSE, cache = TRUE, px = 200, fig.cap="Multi-dimensional raster cubes [@R-stars]", fig.show = "hold", out.width = "50%"}
 knitr::include_graphics("img/cube1.png")
@@ -154,14 +154,11 @@ knitr::include_graphics("img/cube2.png")
 
 ##
 
-```{r 3-grids, echo = FALSE, cache = TRUE, px = 200, fig.cap="Grid formats allowed as `stars`-object [@R-stars]", fig.show = "hold", out.width = "50%"}
+   ... also with non-regular grids:
+
+```{r 3-grids, echo = FALSE, cache = TRUE, px = 300, fig.cap="Grid formats allowed as `stars`-object [@R-stars]", fig.show = "hold", out.width = "50%", fig.align='center'}
 knitr::include_graphics("img/grids.png")
 ```
-
-##
-
-- uses GDAL, netCDF, geos and proj backend
-- stars_proxy are .vrt like objects
 
 
 ##
@@ -172,10 +169,25 @@ Here we can see the similarity with `sf`-verbs and methods:
 methods(class = "stars")
 ```
 
-## stars-proxy
 
+##
+### Architecture
+- uses GDAL, netCDF, geos and proj backend
+- stars_proxy are .vrt like objects
+  * not loaded into memory
+  * on-the-fly functions
+  * only uses metainformation of the dataset and points to file directory
+  * **can handle very large datasets**
 
+##
+### `stars_proxy`
 
+```{r 3-proxy, echo=TRUE}
+methods(class = "stars_proxy")
+```
+
+##
+###
 
 
 
