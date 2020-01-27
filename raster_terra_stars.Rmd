@@ -18,7 +18,7 @@ biblio-style: apalike
 
 # create bib-file for citation of R-packages
 knitr::write_bib(c("raster", "terra", "stars", "sp", "xts", "spacetime",
-                   "abind", "tidyverse", "sf", "rgdal", "ncdf4"),
+                   "abind", "tidyverse", "sf", "rgdal", "ncdf4", "parallel"),
   file = "refs.bib",
   prefix = "R-"
 )
@@ -78,6 +78,7 @@ Rasters are spatial data on a regular grid with elements called "pixels". Contra
 - can iterate functions over large files on disc
 - takes care of the caching via `rgdal` or `ncdf4` [@R-rgdal][@R-ncdf4]
 - feases most raster operations possible in desktop GIS systems (and more...)
+- capacity to run in parallel with `parallel` [@R-parallel]
 
 
 ##
@@ -106,6 +107,7 @@ Rasters are spatial data on a regular grid with elements called "pixels". Contra
   - gdal cubes
   - stars objects
   - [open data cube (ODC)](https://www.opendatacube.org)
+- Implementation in R not very machine-near
 
 ## Data Cubes
 
@@ -126,17 +128,19 @@ devtools::install_github("rspatial/terra")
 ```
 
 ##
-
 - implements new S4 classes (SpatRaster and SpatVector)
 - referring to C++ objects, much faster than `raster`
-- out-of-memory raster operations as `stars_proxy`-objects
+- out-of-memory raster operations as (similar to `stars_proxy`-objects)
+  - saving metadata to object 
+  - processing in chunks
 - rectangular grid (pixels of equal size)
 
 ##
 ### Functions
 
 - vectors to raster conversions
-- local, zonal, global raster operations
+- eading, manipulating, and writing raster data
+- higher-level raster operations
 - integration with spatial modeling methods
 
 

@@ -18,9 +18,24 @@ plot(ras, col = pal,
      ext = c(630000, 660000, 5690000, 5710000))
 
 
-# Terra ------------------------------------------------------------------------
+# Terra vector -----------------------------------------------------------------
 
 
+lon <- c(-116.8, -114.2, -112.9, -111.9, -114.2, -115.4, -117.7)
+lat <- c(41.3, 42.9, 42.4, 39.8, 37.6, 38.3, 37.6)
+lonlat <- cbind(id=1, part=1, lon, lat)
+
+lines <- vect(lonlat, type="lines", crs=4326)
+polygon <- vect(lonlat, type="polygons", crs=4326)
+plot(polygon)
+
+# Terra raster -----------------------------------------------------------------
+
+ras2 <- rast("data/2015-08-23_NDVI.tif")
+ras2
+
+system.time(plot(ras)) # raster brick `raster`
+system.time(plot(ras2)) # SpatRaster `terra`
 
 # Stars 1 read data and plot ---------------------------------------------------
 
@@ -35,7 +50,7 @@ methods(class = "stars")
 
 
 
-# install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source") 
+install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source")
 
 # read_stars uses RasterIO, using the GDAL interface -> very handy
 # yet, written into memory. -> Time & RAM consuming
