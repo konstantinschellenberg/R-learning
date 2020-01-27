@@ -4,22 +4,7 @@ library(stars)
 library(tidyverse)
 library(RColorBrewer)
 
-
-# Raster -----------------------------------------------------------------------
-
-ras = brick("data/2015-08-23_NDVI.tif")
-
-pal = brewer.pal(6, "RdYlGn")
-
-plot(ras, col = pal,
-     maxpixels = 10000)
-
-plot(ras, col = pal,
-     ext = c(630000, 660000, 5690000, 5710000))
-
-
 # Terra vector -----------------------------------------------------------------
-
 
 lon <- c(-116.8, -114.2, -112.9, -111.9, -114.2, -115.4, -117.7)
 lat <- c(41.3, 42.9, 42.4, 39.8, 37.6, 38.3, 37.6)
@@ -31,11 +16,15 @@ plot(polygon)
 
 # Terra raster -----------------------------------------------------------------
 
+ras = brick("data/2015-08-23_NDVI.tif")
 ras2 <- rast("data/2015-08-23_NDVI.tif")
+
 ras2
 
-system.time(plot(ras)) # raster brick `raster`
-system.time(plot(ras2)) # SpatRaster `terra`
+pal = brewer.pal(8, "RdYlGn")
+
+system.time(plot(ras, col = pal)) # raster brick `raster`
+system.time(plot(ras2, col = pal)) # SpatRaster `terra`
 
 # Stars 1 read data and plot ---------------------------------------------------
 
@@ -50,7 +39,7 @@ methods(class = "stars")
 
 
 
-install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source")
+# install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source")
 
 # read_stars uses RasterIO, using the GDAL interface -> very handy
 # yet, written into memory. -> Time & RAM consuming

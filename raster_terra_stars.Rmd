@@ -18,7 +18,7 @@ biblio-style: apalike
 
 # create bib-file for citation of R-packages
 knitr::write_bib(c("raster", "terra", "stars", "sp", "xts", "spacetime",
-                   "abind", "tidyverse", "sf", "rgdal", "ncdf4", "parallel"),
+                   "abind", "tidyverse", "sf", "rgdal", "parallel"),
   file = "refs.bib",
   prefix = "R-"
 )
@@ -40,6 +40,8 @@ library(terra)
 
 library(tidyverse)
 library(RColorBrewer)
+
+pal = brewer.pal(8, "RdYlGn")
 ```
 
 ##
@@ -54,6 +56,7 @@ knitr::include_graphics("img/geoscripting-system-overview.svg")
 
 - rspatial community <https://www.rspatial.org/>
 - creator: Robert J. Hijmans [@R-raster]
+- First CRAN release: 2010-03-20
 - revolution of raster processing in R
 
 ### Basics
@@ -76,7 +79,7 @@ Rasters are spatial data on a regular grid with elements called "pixels". Contra
 - only stores metainformation (layer number, spatial extent, pixel size) in Raster* objects. 
 - Raster*-functions break down tasks to lightweight chunks to be processed sequentially.
 - can iterate functions over large files on disc
-- takes care of the caching via `rgdal` or `ncdf4` [@R-rgdal][@R-ncdf4]
+- takes care of the caching via `rgdal` [@R-rgdal] or `ncdf4`
 - feases most raster operations possible in desktop GIS systems (and more...)
 - capacity to run in parallel with `parallel` [@R-parallel]
 
@@ -100,8 +103,24 @@ Rasters are spatial data on a regular grid with elements called "pixels". Contra
 * `plot()`: Plot a raster object, use add = TRUE to overlay several objects.
 * `(. . .)` ellipse: more arguments can be passed to function, e.g. destination directory
 
+##
+
+### Raster Object `brick`:
+
+```{r 1-brick, echo=TRUE, fig.align = 'center'}
+ras = brick("data/S2A_20161004.tif")
+ras
+```
+
+---
+
+```{r 1-brick-plot, fig.cap="`RasterBrick` as RGB composite", echo=TRUE, fig.align='center'}
+plotRGB(ras, 4, 3, 2, stretch = "hist", maxpixels=100000)
+```
+
 
 ##
+
 ### drawbacks
 - no real data cubes: either different bands _or_ time steps
   - gdal cubes
@@ -123,7 +142,7 @@ Aims to replace the `raster` package (in the future)
 - no CRAN release yet. Stable version in July 2019 
 - clone development stage from github (not yet on CRAN)
 
-```{r install_terra, echo=TRUE, include=FALSE}
+```{r install_terra, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE, include=FALSE}
 devtools::install_github("rspatial/terra")
 ```
 
@@ -147,10 +166,10 @@ devtools::install_github("rspatial/terra")
 # 3. Stars
 ## Stars
 
-- r-spatial community <https://www.r-spatial.org/>
+- R-spatial community <https://www.r-spatial.org/>
 - Pebesma, E.; Sumner, M & Racine, E. [@R-stars]
-- CRAN release: 2019-10-10
-- builds upon the idea implemented in `spacetime`, which rely on `sp` (_spatial_) and `xts` (_temporal_). [@R-spacetime]
+- First CRAN release: 2018-07-25
+- Builds upon the idea implemented in `spacetime`, which rely on `sp` (_spatial_) and `xts` (_temporal_). [@R-spacetime]
 
 designed to handle:
 
@@ -227,4 +246,4 @@ methods(class = "stars_proxy")
 
 **RStudio**
 
-## References
+# References
