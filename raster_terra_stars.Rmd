@@ -7,10 +7,10 @@ output:
     ioslides_presentation:
         widescreen: true
         smaller: true
-        larger: true
-        logo: Logo_UniJena.svg
+        logo: Bild1.png
         css: styles.css
-bibliography: refs.bib
+        incremental: true
+bibliography: [refs.bib, another.bib]
 biblio-style: apalike
 ---
 
@@ -18,18 +18,30 @@ biblio-style: apalike
 
 # create bib-file for citation of R-packages
 knitr::write_bib(c("raster", "terra", "stars", "sp", "xts", "spacetime",
-                   "abind", "tidyverse", "sf", "rgdal", "parallel"),
+                   "abind", "tidyverse", "sf", "rgdal", "gdalcubes"),
   file = "refs.bib",
   prefix = "R-"
 )
 
 ```
 
-## Table of contents {.larger}
+## Table of contents
 
-### 1. Raster
-### 2. Terra
-### 3. Stars
+**0.1 System Overview**
+
+1. Raster
+    1. Objectives & Functions
+    2. Benefits
+    3. Shortcomings
+    4. Data Cubes
+2. Stars
+    1. Objectives
+    2. Cubes
+    3. Functionality (-> Rstudio input)
+3. Terra
+    1. Objectives & Functions
+    2. Benefits & Drawbacks
+    
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -42,51 +54,48 @@ library(tidyverse)
 library(RColorBrewer)
 
 pal = brewer.pal(8, "RdYlGn")
+ras = brick("data/S2A_20161004.tif")
 ```
 
-##
+# 0.1 System Overview
 
-```{r 1-overview, echo = FALSE, cache = TRUE, px = 500, fig.show = "hold", out.width = "80%", fig.align='center', fig.cap="figure from https://geoscripting-wur.github.io/IntroToRaster/ [accessed 27-01-2020]"}
-knitr::include_graphics("img/geoscripting-system-overview.svg")
+## System Overview
+
+```{r 1-overview, echo = FALSE, cache = TRUE, px = 600, fig.show = "hold", out.width = "80%", fig.align='center', fig.cap="The world of spatial processing in the programming  domain. <https://geoscripting-wur.github.io/IntroToRaster/> [accessed 27-01-2020]"}
+knitr::include_graphics("img/geoscripting-system-overview.png")
 ```
 
 # 1. Raster
 
-## Raster
+## `Raster`
 
-- rspatial community <https://www.rspatial.org/>
-- creator: Robert J. Hijmans [@R-raster]
+- Rspatial community <https://www.rspatial.org/>
+- Creator: Robert J. Hijmans [@R-raster]
 - First CRAN release: 2010-03-20
-- revolution of raster processing in R
+- **Revolution of raster processing in R**
 
-### Basics
+_Geographic raster data models consist of a raster header and a matrix (with rows and columns) representing equally spaced cells (pixels)_. Geocomputation in R [@lovelace_geocomputation_2019]
 
-Rasters are spatial data on a regular grid with elements called "pixels". Contrast to vector data, representing points, lines & polygons (see `sp`, `sf`)
 
-- read and write raster data in common formats
-- perform common raster operations such as
-  - cropping
-  - reprojection
-  - resampling etc.
-- fast operations due to C code backended
+```{r 1-raster_graphic, echo=FALSE, fig.align='center', fig.cap="@lovelace_geocomputation_2019"}
+knitr::include_graphics("img/raster-intro-plot-1.png")
+```
+
+---
+
+### Objective
+
+- read and write raster data in most formats -> GDAL (C++)
+- perform raster operations -> GEOS (C++)
 - visualise data
 
-##
+```{r 1-brick-plot,out.width="50%" ,fig.cap="`RasterBrick` as RGB composite", echo=FALSE, fig.align='center'}
+plotRGB(ras, 4, 3, 2, stretch = "hist", ext = extent(500000, 609780, 6690220, 6740000))
+```
 
-### Benefits
+---
 
-- not loading into local memory 
-- only stores metainformation (layer number, spatial extent, pixel size) in Raster* objects. 
-- Raster*-functions break down tasks to lightweight chunks to be processed sequentially.
-- can iterate functions over large files on disc
-- takes care of the caching via `rgdal` [@R-rgdal] or `ncdf4`
-- feases most raster operations possible in desktop GIS systems (and more...)
-- capacity to run in parallel with `parallel` [@R-parallel]
-
-
-##
-
-### Methods (overview)
+### Functions
 
 * raster algebra: `+`, `-`, `*`, `/`, `>`, `abs`, `sum` (built-in functions)
 * `raster()`: Read a single-layer raster object
@@ -103,83 +112,52 @@ Rasters are spatial data on a regular grid with elements called "pixels". Contra
 * `plot()`: Plot a raster object, use add = TRUE to overlay several objects.
 * `(. . .)` ellipse: more arguments can be passed to function, e.g. destination directory
 
-##
-
-### Raster Object `brick`:
-
-```{r 1-brick, echo=TRUE, fig.align = 'center'}
-ras = brick("data/S2A_20161004.tif")
-ras
-```
-
 ---
 
-```{r 1-brick-plot, fig.cap="`RasterBrick` as RGB composite", echo=TRUE, fig.align='center'}
-plotRGB(ras, 4, 3, 2, stretch = "hist", maxpixels=100000)
-```
+### Benefits
 
+- Raster*-functions break down tasks to lightweight chunks to be processed sequentially.
+- feases most raster operations possible in desktop GIS systems (and more...)
+- capacity to run in parallel
+- exellent manual, support and large user community
 
-##
-
-### drawbacks
-- no real data cubes: either different bands _or_ time steps
-  - gdal cubes
-  - stars objects
-  - [open data cube (ODC)](https://www.opendatacube.org)
-- Implementation in R not very machine-near
+_so... is it enough?_
 
 ## Data Cubes
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/XVy61NsNzCU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="270" src="https://www.youtube.com/embed/XVy61NsNzCU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-# 2. Terra
-## Terra 
+---
 
-Aims to replace the `raster` package (in the future)
+### `Raster` shortcomings
 
-- rspatial community <https://www.rspatial.org/>
-- creator: Robert J. Hijmans [@R-terra]
-- no CRAN release yet. Stable version in July 2019 
-- clone development stage from github (not yet on CRAN)
+Supposing we want our data in a scalable structure...
 
-```{r install_terra, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE, include=FALSE}
-devtools::install_github("rspatial/terra")
-```
-
-##
-- implements new S4 classes (SpatRaster and SpatVector)
-- referring to C++ objects, much faster than `raster`
-- out-of-memory raster operations as (similar to `stars_proxy`-objects)
-  - saving metadata to object 
-  - processing in chunks
-- rectangular grid (pixels of equal size)
-
-##
-### Functions
-
-- vectors to raster conversions
-- eading, manipulating, and writing raster data
-- higher-level raster operations
-- integration with spatial modeling methods
+- no real data cubes: either different bands _or_ time steps
+- Alternatives:
+  - [gdal cubes](https://github.com/appelmar/gdalcubes). e.g. in R `gdalcubes` [@R-gdalcubes]
+  - `stars` objects
+  - [open data cube (ODC)](https://www.opendatacube.org) <-
 
 
-# 3. Stars
-## Stars
+# 2. Stars
+
+## `Stars`
 
 - R-spatial community <https://www.r-spatial.org/>
 - Pebesma, E.; Sumner, M & Racine, E. [@R-stars]
 - First CRAN release: 2018-07-25
 - Builds upon the idea implemented in `spacetime`, which rely on `sp` (_spatial_) and `xts` (_temporal_). [@R-spacetime]
 
-designed to handle:
+### Objectives
 
 1. heterogeneous data (`numeric`, `logical` and `Date`) as multi-dimensional arrays
 2. clear and strong spatial and temporal indeces
-3. large out-of-memory data and remote server solutions
+3. large on-disc data and remote server solutions
 
 by using `sf` methods and following the _tidy tools manifesto_. [@tidyverse2019]
 
-##
+---
 
 Handles spatio-temporal data as
 
@@ -193,15 +171,16 @@ knitr::include_graphics("img/cube1.png")
 knitr::include_graphics("img/cube2.png")
 ```
 
-##
-
-   ... also with non-regular grids:
+---
 
 ```{r 3-grids, echo = FALSE, cache = TRUE, px = 300, fig.cap="Grid formats allowed as `stars`-object [@R-stars]", fig.show = "hold", out.width = "50%", fig.align='center'}
 knitr::include_graphics("img/grids.png")
 ```
 
-##
+
+  ... also with non-regular grids.
+   
+---
 
 Similarities with `sf` and `tidyverse` methods:
 
@@ -209,41 +188,90 @@ Similarities with `sf` and `tidyverse` methods:
 methods(class = "stars")
 ```
 
-##
+---
 
-### Architecture
+### Functionality
 
-builds upon:
+`stars_proxy`-objects are similar to virtual tile in GDAL. 
 
-* R developments:
-  * sf & tidyverse
-  * abind
-  * rgdal
+Builds upon:
 
-* out-of-R developments:
-  * GDAL
-  * netCDF
-  * PROJ
+* sf & tidyverse
+* GDAL
+* GEOS
+* netCDF
+* PROJ
   
-##
-### out-of-memory functionality
-
-`stars_proxy`-objects are similar to virtual tile in GDAL. They are
+They are
 
 * not loaded into memory
 * on-the-fly functions
 * only accessed by metainformation and the pointer to the file directory
 
-##
+---
+
 ### `stars_proxy`
 
 ```{r 3-proxy, echo=TRUE}
 methods(class = "stars_proxy")
 ```
 
+**RStudio**
+
+
+# 3. Terra
+## `Terra` 
+
+Aims to replace the `raster` package (in the future)
+
+- rspatial community <https://www.rspatial.org/>
+- creator: Robert J. Hijmans [@R-terra]
+- no CRAN release yet. Stable version in July 2019 
+
+```{r install_terra, echo=FALSE, message=FALSE, warning=FALSE}
+devtools::install_github("rspatial/terra")
+```
+
+### Objective
+
+- implements new S4 classes (SpatRaster and SpatVector)
+- referring to C++ objects, much faster than `raster`
+- virtual raster operations
+- rectangular grid (pixels of equal size)
+
 ##
-###
+### Functions
+
+- creating, manipulating, and writing raster data
+- raster algebra
+- higher-level raster operations
+- integration with spatial modeling methods
+
+### Virtual file handling (similar to `stars_proxy`-objects)
+- saving metadata to objects, keeping data on disc
+- processing in chunks
+- no filename: temporarily stored to temporary file
 
 **RStudio**
 
-# References
+---
+
+### Benefits
+
+- new, cleaner version of `raster`
+- profits from earlier experiences & development
+- **R for spatio-temporal Big Data**
+- good vignette and manual
+
+### Drawbacks
+
+- CRAN release still to come -> small community
+- yet another spatial data object format?
+
+---
+
+```{r last, echo=FALSE, fig.align='center', fig.height=25, fig.width=30}
+knitr::include_graphics("img/dataCube.gif")
+```
+
+## References

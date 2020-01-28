@@ -3,25 +3,28 @@ library(raster)
 library(stars)
 library(tidyverse)
 library(RColorBrewer)
+pal = brewer.pal(8, "RdYlGn")
 
 # Terra vector -----------------------------------------------------------------
 
-lon <- c(-116.8, -114.2, -112.9, -111.9, -114.2, -115.4, -117.7)
-lat <- c(41.3, 42.9, 42.4, 39.8, 37.6, 38.3, 37.6)
-lonlat <- cbind(id=1, part=1, lon, lat)
+lon = c(-116.8, -114.2, -112.9, -111.9, -114.2, -115.4, -117.7)
+lat = c(41.3, 42.9, 42.4, 39.8, 37.6, 38.3, 37.6)
+lonlat = cbind(id=1, part=1, lon, lat)
 
-lines <- vect(lonlat, type="lines", crs=4326)
-polygon <- vect(lonlat, type="polygons", crs=4326)
-plot(polygon)
+
+
+line = vect(lonlat, type="lines", crs=4326)
+poly = vect(lonlat, type="polygons", crs=4326)
+plot(line)
+plot(poly, col = "grey")
 
 # Terra raster -----------------------------------------------------------------
 
 ras = brick("data/2015-08-23_NDVI.tif")
-ras2 <- rast("data/2015-08-23_NDVI.tif")
+ras2 = rast("data/2015-08-23_NDVI.tif")
 
+ras
 ras2
-
-pal = brewer.pal(8, "RdYlGn")
 
 system.time(plot(ras, col = pal)) # raster brick `raster`
 system.time(plot(ras2, col = pal)) # SpatRaster `terra`
